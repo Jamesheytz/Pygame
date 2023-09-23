@@ -23,6 +23,7 @@ snail_rect = snail_scaled_surface.get_rect(midbottom=(600, 250))
 player_surface = pygame.image.load("player_stand.png").convert_alpha()
 player_scaled_surface = pygame.transform.scale_by(player_surface, 0.7)
 player_rect = player_scaled_surface.get_rect(midbottom=(50, 250))
+player_gravity = 0
 
 while True:
     for event in pygame.event.get():
@@ -30,9 +31,18 @@ while True:
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.MOUSEMOTION:
+        #if event.type == pygame.MOUSEMOTION:
+        #    if player_rect.collidepoint(event.pos):
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
             if player_rect.collidepoint(event.pos):
-                print("BOOM!")
+                if player_rect.bottom >= 250:
+                    player_gravity = -20
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if player_rect.bottom >= 250:
+                    player_gravity = -17
 
     # Slime functions
     if snail_rect.right < 0:
@@ -41,16 +51,22 @@ while True:
     # Player functions
     if player_rect.left > 640:
         player_rect.right = 0
-    if player_rect.colliderect(snail_rect):
-        print("CRASH!")
+    if player_rect.bottom >= 250:
+        player_rect.bottom = 250
 
     screen.blit(sky_scaled_surface, (0, 0))
-    screen.blit(snail_scaled_surface, snail_rect)
-    screen.blit(player_scaled_surface, player_rect)
     screen.blit(ground_surface, (0, 250))
+    screen.blit(player_scaled_surface, player_rect)
+    screen.blit(snail_scaled_surface, snail_rect)
     screen.blit(score_surface, score_rect)
-    snail_rect.right -= 3
-    player_rect.right += 2
 
+    snail_rect.right -= 3
+
+    player_rect.right += 2
+    player_gravity += 1
+    player_rect.y += player_gravity
+
+    if snail_rect.colliderect(player_rect):
+        pygame.quit()
     pygame.display.update()
     clock.tick(60)
