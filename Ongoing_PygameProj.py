@@ -8,6 +8,7 @@ screen = pygame.display.set_mode((640, 350))
 pygame.display.set_caption("Slime")
 clock = pygame.time.Clock()
 test_font = pygame.font.Font("Font.ttf", 25)
+game_active = True
 
 sky_surface = pygame.image.load("background.png").convert()
 sky_scaled_surface = pygame.transform.scale_by(sky_surface, 0.8)
@@ -31,42 +32,41 @@ while True:
             pygame.quit()
             sys.exit()
 
-        #if event.type == pygame.MOUSEMOTION:
-        #    if player_rect.collidepoint(event.pos):
-
         if event.type == pygame.MOUSEBUTTONDOWN:
             if player_rect.collidepoint(event.pos):
                 if player_rect.bottom >= 250:
-                    player_gravity = -20
+                    player_gravity = -17
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 if player_rect.bottom >= 250:
-                    player_gravity = -17
+                    player_gravity = - 17
 
-    # Slime functions
-    if snail_rect.right < 0:
-        snail_rect.left = 640
+    if game_active:
+        screen.blit(sky_scaled_surface, (0, 0))
+        screen.blit(ground_surface, (0, 250))
+        screen.blit(score_surface, score_rect)
+        screen.blit(snail_scaled_surface, snail_rect)
+        screen.blit(player_scaled_surface, player_rect)
 
-    # Player functions
-    if player_rect.left > 640:
-        player_rect.right = 0
-    if player_rect.bottom >= 250:
-        player_rect.bottom = 250
+        if snail_rect.right < 0:
+            snail_rect.left = 640
 
-    screen.blit(sky_scaled_surface, (0, 0))
-    screen.blit(ground_surface, (0, 250))
-    screen.blit(player_scaled_surface, player_rect)
-    screen.blit(snail_scaled_surface, snail_rect)
-    screen.blit(score_surface, score_rect)
+        if snail_rect.colliderect(player_rect):
+            game_active = False
 
-    snail_rect.right -= 3
+        snail_rect.right -= 3
 
-    player_rect.right += 2
-    player_gravity += 1
-    player_rect.y += player_gravity
+        player_rect.right += 2
+        player_gravity += 1
+        player_rect.y += player_gravity
+        if player_rect.left > 640:
+            player_rect.right = 0
+        if player_rect.bottom >= 250:
+            player_rect.bottom = 250
 
-    if snail_rect.colliderect(player_rect):
-        pygame.quit()
+    else:
+        screen.fill("yellow")
+
     pygame.display.update()
     clock.tick(60)
