@@ -2,8 +2,8 @@ import sys
 import pygame
 
 def display_score():
-    current_time = pygame.time.get_ticks() - start_time
-    score_surface = test_font.render(f'{current_time}', False, (64, 64, 64))
+    current_time = int(pygame.time.get_ticks() / 250) - start_time
+    score_surface = test_font.render(f'Score: {current_time}', False, (64, 64, 64))
     score_rect = score_surface.get_rect(center=(320, 45))
     screen.blit(score_surface, score_rect)
 
@@ -12,12 +12,14 @@ screen = pygame.display.set_mode((640, 350))
 pygame.display.set_caption("Slime")
 clock = pygame.time.Clock()
 test_font = pygame.font.Font("Font.ttf", 25)
-game_active = True
+game_active = False
 start_time = 0
 
 sky_surface = pygame.image.load("background.png").convert()
 sky_scaled_surface = pygame.transform.scale_by(sky_surface, 0.8)
 ground_surface = pygame.image.load("ground.png").convert_alpha()
+menu_font_surface = test_font.render("Press Any Key to Start", False, (70, 104, 93))
+menu_font_rect = menu_font_surface.get_rect(center=(320, 250))
 
 #score_surface = test_font.render('Score', False, "Black")
 #score_rect = score_surface.get_rect(center=(320, 45))
@@ -30,6 +32,8 @@ snail_rect = snail_scaled_surface.get_rect(midbottom=(600, 250))
 player_surface = pygame.image.load("player_stand.png").convert_alpha()
 player_scaled_surface = pygame.transform.scale_by(player_surface, 0.7)
 player_rect = player_scaled_surface.get_rect(midbottom=(50, 250))
+second_player_scaled_surface = pygame.transform.scale_by(player_surface, 1)
+second_player_rect = second_player_scaled_surface.get_rect(center=(320, 150))
 player_gravity = 0
 
 while True:
@@ -38,17 +42,18 @@ while True:
             pygame.quit()
             sys.exit()
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+
         if not game_active:
             if event.type == pygame.KEYDOWN:
-                game_active = True
-                snail_rect.left = 640
-                player_rect.right = 10
-                start_time = pygame.time.get_ticks()
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if player_rect.collidepoint(event.pos):
-                if player_rect.bottom >= 250:
-                    player_gravity = -17
+                if event.key == pygame.K_SPACE:
+                    game_active = True
+                    snail_rect.left = 640
+                    player_rect.right = 10
+                    start_time = int(pygame.time.get_ticks() / 250)
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -82,7 +87,9 @@ while True:
             player_rect.bottom = 250
 
     else:
-        screen.fill("yellow")
+        screen.fill("#619182")
+        screen.blit(second_player_scaled_surface, second_player_rect)
+        screen.blit(menu_font_surface, menu_font_rect)
 
     pygame.display.update()
     clock.tick(60)
