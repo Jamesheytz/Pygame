@@ -6,6 +6,7 @@ def display_score():
     score_surface = test_font.render(f'Score: {current_time}', False, (64, 64, 64))
     score_rect = score_surface.get_rect(center=(320, 45))
     screen.blit(score_surface, score_rect)
+    return current_time
 
 pygame.init()
 screen = pygame.display.set_mode((640, 350))
@@ -14,11 +15,12 @@ clock = pygame.time.Clock()
 test_font = pygame.font.Font("Font.ttf", 25)
 game_active = False
 start_time = 0
+score = 0
 
 sky_surface = pygame.image.load("background.png").convert()
 sky_scaled_surface = pygame.transform.scale_by(sky_surface, 0.8)
 ground_surface = pygame.image.load("ground.png").convert_alpha()
-menu_font_surface = test_font.render("Press Any Key to Start", False, (70, 104, 93))
+menu_font_surface = test_font.render("Press Space bar to Start", False, (70, 104, 93))
 menu_font_rect = menu_font_surface.get_rect(center=(320, 250))
 
 #score_surface = test_font.render('Score', False, "Black")
@@ -66,7 +68,7 @@ while True:
         #screen.blit(score_surface, score_rect)
         screen.blit(snail_scaled_surface, snail_rect)
         screen.blit(player_scaled_surface, player_rect)
-        display_score()
+        score = display_score()
 
 
         snail_rect.right -= 3
@@ -90,6 +92,12 @@ while True:
         screen.fill("#619182")
         screen.blit(second_player_scaled_surface, second_player_rect)
         screen.blit(menu_font_surface, menu_font_rect)
+        score_menu = test_font.render(f'Your score is: {score}', False, (70, 104, 93))
+        score_menu_rect = score_menu.get_rect(center=(320, 285))
+        if score == 0:
+            screen.blit(menu_font_surface, menu_font_rect)
+        else:
+            screen.blit(score_menu, score_menu_rect)
 
     pygame.display.update()
     clock.tick(60)
