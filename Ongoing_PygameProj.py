@@ -38,6 +38,9 @@ second_player_scaled_surface = pygame.transform.scale_by(player_surface, 1)
 second_player_rect = second_player_scaled_surface.get_rect(center=(320, 150))
 player_gravity = 0
 
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 1000)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -62,15 +65,17 @@ while True:
                 if player_rect.bottom >= 250:
                     player_gravity = - 17
 
+        if event.type == obstacle_timer and game_active:
+            print("Test")
+
     if game_active:
+
         screen.blit(sky_scaled_surface, (0, 0))
         screen.blit(ground_surface, (0, 250))
         #screen.blit(score_surface, score_rect)
         screen.blit(snail_scaled_surface, snail_rect)
         screen.blit(player_scaled_surface, player_rect)
         score = display_score()
-
-
         snail_rect.right -= 3
 
         if snail_rect.right < 0:
@@ -94,6 +99,7 @@ while True:
         screen.blit(menu_font_surface, menu_font_rect)
         score_menu = test_font.render(f'Your score is: {score}', False, (70, 104, 93))
         score_menu_rect = score_menu.get_rect(center=(320, 285))
+
         if score == 0:
             screen.blit(menu_font_surface, menu_font_rect)
         else:
