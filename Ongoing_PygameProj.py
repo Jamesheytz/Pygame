@@ -16,7 +16,12 @@ def obstacle_movement(obstacle_list):
         for obstacle_rect in obstacle_list:
             obstacle_rect.x -= 5
 
-            screen.blit(snail_scaled_surface, obstacle_rect)
+            if obstacle_rect.bottom == 250:
+                screen.blit(snail_scaled_surface, obstacle_rect)
+            else:
+                screen.blit(fly_surface, obstacle_rect)
+
+            obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
 
         return obstacle_list
     else:
@@ -38,21 +43,18 @@ ground_surface = pygame.image.load("ground.png").convert_alpha()
 menu_font_surface = test_font.render("Press Space bar to Start", False, (70, 104, 93))
 menu_font_rect = menu_font_surface.get_rect(center=(320, 250))
 
-# score_surface = test_font.render('Score', False, "Black")
-# score_rect = score_surface.get_rect(center=(320, 45))
+snail_surface = pygame.image.load("snail1.png")
+snail_scaled_surface = pygame.transform.scale_by(snail_surface, 0.7).convert_alpha()
 
-
-snail_surface = pygame.image.load("snail1.png").convert_alpha()
-snail_scaled_surface = pygame.transform.scale_by(snail_surface, 0.7)
-snail_rect = snail_scaled_surface.get_rect(midbottom=(600, 250))
+fly_surface = pygame.image.load("fly.png")
 
 obstacle_rect_list = []
 
-player_surface = pygame.image.load("player_stand.png").convert_alpha()
-player_scaled_surface = pygame.transform.scale_by(player_surface, 0.7)
+player_surface = pygame.image.load("player_stand.png")
+player_scaled_surface = pygame.transform.scale_by(player_surface, 0.7).convert_alpha()
 player_rect = player_scaled_surface.get_rect(midbottom=(50, 250))
-second_player_scaled_surface = pygame.transform.scale_by(player_surface, 1)
-second_player_rect = second_player_scaled_surface.get_rect(center=(320, 150))
+menu_player_scaled_surface = pygame.transform.scale_by(player_surface, 1)
+menu_player_rect = menu_player_scaled_surface.get_rect(center=(320, 150))
 player_gravity = 0
 
 obstacle_timer = pygame.USEREVENT + 1
@@ -73,7 +75,6 @@ while True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     game_active = True
-                    snail_rect.left = 640
                     player_rect.right = 100
                     start_time = int(pygame.time.get_ticks() / 250)
 
@@ -83,25 +84,19 @@ while True:
                     player_gravity = - 17
 
         if event.type == obstacle_timer and game_active:
-            obstacle_rect_list.append(snail_scaled_surface.get_rect(midbottom=(randint(640, 900), 250)))
+            if randint(0, 2):
+                obstacle_rect_list.append(snail_scaled_surface.get_rect(midbottom=(randint(640, 900), 250)))
+            else:
+                obstacle_rect_list.append(fly_surface.get_rect(midbottom=(randint(640, 900), 160)))
 
     if game_active:
 
         screen.blit(sky_scaled_surface, (0, 0))
         screen.blit(ground_surface, (0, 250))
-        # screen.blit(score_surface, score_rect)
-        screen.blit(snail_scaled_surface, snail_rect)
         screen.blit(player_scaled_surface, player_rect)
         score = display_score()
 
         obstacle_rect_list = obstacle_movement(obstacle_rect_list)
-# Snail Functions
-#         snail_rect.right -= 3
-#         if snail_rect.right < 0:
-#             snail_rect.left = 640
-#
-#         if snail_rect.colliderect(player_rect):
-#             game_active = False
 
 # Player Functions
         player_rect.right += 0
@@ -115,7 +110,7 @@ while True:
 
     else:
         screen.fill("#619182")
-        screen.blit(second_player_scaled_surface, second_player_rect)
+        screen.blit(menu_player_scaled_surface, menu_player_rect)
         screen.blit(menu_font_surface, menu_font_rect)
         score_menu = test_font.render(f'Your score is: {score}', False, (70, 104, 93))
         score_menu_rect = score_menu.get_rect(center=(320, 285))
